@@ -78,6 +78,8 @@ try:
     login_post = c.post(url_login, headers=headers, timeout=5, cookies=login_get.cookies, data=auth)
     if not login_post.status_code == 200:
         sys.exit(log('An error occurred while trying to submit the login data'))
+    if BeautifulSoup(login_post.text).find('p', {'class': 'warn'}) is not None:
+        sys.exit('The D-Link DDNS service does not accept the credentials.')
 
     # get the respective host page
     page_get = c.get(url_page, headers=headers, timeout=5, cookies=login_post.cookies)
