@@ -107,5 +107,20 @@ try:
 
     print log('IP address was successfully updated')
 
+except requests.exceptions.ConnectionError:
+    f = open(os.path.join(path, 'last-ip'), 'w', 1)
+    f.write(old_ip)
+    sys.exit(log('ConnectionError occurred while communicating with the D-Link DDNS service'))
+except requests.exceptions.HTTPError:
+    f = open(os.path.join(path, 'last-ip'), 'w', 1)
+    f.write(old_ip)
+    sys.exit(log('HTTPError occurred while communicating with the D-Link DDNS service'))
 except requests.exceptions.Timeout:
+    f = open(os.path.join(path, 'last-ip'), 'w', 1)
+    f.write(old_ip)
     sys.exit(log('Timeout occurred while communicating with the D-Link DDNS service'))
+except requests.exceptions.TooManyRedirects:
+    f = open(os.path.join(path, 'last-ip'), 'w', 1)
+    f.write(old_ip)
+    sys.exit(log('TooManyRedirects occurred while communicating with the D-Link DDNS service'))
+
