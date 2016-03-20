@@ -40,8 +40,9 @@ if ip == old_ip:
     print log('IP address did not change')
     sys.exit(0)
 else:
-    f = open(os.path.join(path, 'last-ip'), 'w', 1)
+    f = open(os.path.join(path, 'last-ip'), 'w+', 1)
     f.write(ip)
+    f.close()
 
 url_login = 'https://www.dlinkddns.com/login/?next=/'
 url_page = 'https://www.dlinkddns.com/host/'
@@ -58,6 +59,8 @@ headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'Keep-Alive'
 }
+
+error = False
 
 try:
     c = requests.session()
@@ -109,13 +112,18 @@ try:
 
 except requests.exceptions.ConnectionError:
     print log('ConnectionError occurred while communicating with the D-Link DDNS service')
+    error = True
 except requests.exceptions.HTTPError:
     print log('HTTPError occurred while communicating with the D-Link DDNS service')
+    error = True
 except requests.exceptions.Timeout:
     print log('Timeout occurred while communicating with the D-Link DDNS service')
+    error = True
 except requests.exceptions.TooManyRedirects:
     print log('TooManyRedirects occurred while communicating with the D-Link DDNS service')
+    error = True
 finally:
-    f = open(os.path.join(path, 'last-ip'), 'w', 1)
-    f.write(old_ip)
-    sys.exit('')
+    if error:
+        f = open(os.path.join(path, 'last-ip'), 'w', 1)
+        f.write(old_ip)
+        sys.exit('')
